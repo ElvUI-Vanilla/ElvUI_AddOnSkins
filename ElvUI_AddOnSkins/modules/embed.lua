@@ -89,7 +89,6 @@ function EMB:EmbedUpdate()
 
 	if self:CheckEmbed("Omen") then self:EmbedOmen() end
 	if self:CheckEmbed("Recount") then self:EmbedRecount() end
-	if self:CheckEmbed("Skada") then self:EmbedSkada() end
 end
 
 function EMB:SetHooks()
@@ -138,7 +137,7 @@ function EMB:SetHooks()
 		EMB:UpdateSwitchButton()
 	end)
 
-	RightChatToggleButton:HookScript("OnEnter", function()
+	HookScript(RightChatToggleButton, "OnEnter", function()
 		if E.db.addOnSkins.embed.rightChatPanel then
 			GameTooltip:AddDoubleLine(L["Right Click:"], L["Toggle Embedded Addon"], 1, 1, 1)
 			GameTooltip:Show()
@@ -171,7 +170,7 @@ function EMB:SetHooks()
 		EMB:UpdateSwitchButton()
 	end)
 
-	LeftChatToggleButton:HookScript("OnEnter", function()
+	HookScript(LeftChatToggleButton, "OnEnter", function()
 		if not E.db.addOnSkins.embed.rightChatPanel then
 			GameTooltip:AddDoubleLine(L["Right Click:"], L["Toggle Embedded Addon"], 1, 1, 1)
 			GameTooltip:Show()
@@ -209,21 +208,21 @@ function EMB:WindowResize()
 	self.mainFrame:SetParent(chatPanel)
 	self.mainFrame:ClearAllPoints()
 
-	self.mainFrame:Point("BOTTOMLEFT", chatData, topRight, 0, yOffset)
-	self.mainFrame:Point("TOPRIGHT", chatTab, db.belowTopTab and "BOTTOMRIGHT" or "TOPRIGHT", xOffset, db.belowTopTab and -SPACING or 0)
+	E:Point(self.mainFrame, "BOTTOMLEFT", chatData, topRight, 0, yOffset)
+	E:Point(self.mainFrame, "TOPRIGHT", chatTab, db.belowTopTab and "BOTTOMRIGHT" or "TOPRIGHT", xOffset, db.belowTopTab and -SPACING or 0)
 
 	if isDouble then
 		self.leftFrame:ClearAllPoints()
-		self.leftFrame:Point("TOPLEFT", self.mainFrame)
-		self.leftFrame:Point("BOTTOMRIGHT", self.mainFrame, "BOTTOMRIGHT", -(self.mainFrame:GetWidth() - db.leftWindowWidth  + SPACING), 0)
+		E:Point(self.leftFrame, "TOPLEFT", self.mainFrame)
+		E:Point(self.leftFrame, "BOTTOMRIGHT", self.mainFrame, "BOTTOMRIGHT", -(self.mainFrame:GetWidth() - db.leftWindowWidth + SPACING), 0)
 
 		self.rightFrame:ClearAllPoints()
-		self.rightFrame:Point("TOPLEFT", self.leftFrame, "TOPRIGHT", SPACING, 0)
-		self.rightFrame:Point("BOTTOMRIGHT", self.mainFrame)
+		E:Point(self.rightFrame, "TOPLEFT", self.leftFrame, "TOPRIGHT", SPACING, 0)
+		E:Point(self.rightFrame, "BOTTOMRIGHT", self.mainFrame)
 	else
 		self.leftFrame:ClearAllPoints()
-		self.leftFrame:Point("TOPLEFT", self.mainFrame)
-		self.leftFrame:Point("BOTTOMRIGHT", self.mainFrame)
+		E:Point(self.leftFrame, "TOPLEFT", self.mainFrame)
+		E:Point(self.leftFrame, "BOTTOMRIGHT", self.mainFrame)
 	end
 
 	self:UpdateSwitchButton()
@@ -248,9 +247,9 @@ function EMB:UpdateSwitchButton()
 		self.switchButton:ClearAllPoints()
 
 		if E.Chat.RightChatWindowID and _G["ChatFrame"..E.Chat.RightChatWindowID.."Tab"]:IsVisible() then
-			self.switchButton:Point("LEFT", _G["ChatFrame"..E.Chat.RightChatWindowID.."Tab"], "RIGHT", 0, 0)
+			E:Point(self.switchButton, "LEFT", _G["ChatFrame"..E.Chat.RightChatWindowID.."Tab"], "RIGHT", 0, 0)
 		else
-			self.switchButton:Point(db.rightChatPanel and "LEFT" or "RIGHT", chatTab, 5, 4)
+			E:Point(self.switchButton, db.rightChatPanel and "LEFT" or "RIGHT", chatTab, 5, 4)
 		end
 	elseif self.switchButton:IsShown() then
 		self.switchButton:Hide()
@@ -265,13 +264,13 @@ function EMB:EmbedCreate()
 	self.rightFrame = CreateFrame("Frame", "ElvUI_AddOnSkins_Embed_RightWindow", self.mainFrame)
 
 	self.switchButton = CreateFrame("Button", "ElvUI_AddOnSkins_Embed_SwitchButton", UIParent)
-	self.switchButton:Size(120, 32)
+	E:Size(self.switchButton, 120, 32)
 	self.switchButton:RegisterForClicks("AnyUp")
 
 	self.switchButton.text = self.switchButton:CreateFontString(nil, "OVERLAY")
-	self.switchButton.text:FontTemplate(E.LSM:Fetch("font", E.db.chat.tabFont), E.db.chat.tabFontSize, E.db.chat.tabFontOutline)
+	E:FontTemplate(self.switchButton.text, E.LSM:Fetch("font", E.db.chat.tabFont), E.db.chat.tabFontSize, E.db.chat.tabFontOutline)
 	self.switchButton.text:SetTextColor(unpack(E["media"].rgbvaluecolor))
-	self.switchButton.text:SetPoint("LEFT", 16, -5)
+	E:Point(self.switchButton.text, "LEFT", 16, -5)
 
 	self.switchButton:SetScript("OnClick", function(self, button)
 		if EMB.mainFrame:IsShown() then
@@ -284,8 +283,8 @@ function EMB:EmbedCreate()
 		EMB:UpdateSwitchButton()
 	end)
 
-	self.switchButton:SetScript("OnMouseDown", function(self) self.text:Point("LEFT", 18, -7) end)
-	self.switchButton:SetScript("OnMouseUp", function(self) self.text:Point("LEFT", 16, -5) end)
+	self.switchButton:SetScript("OnMouseDown", function() E:Point(this.text, "LEFT", 18, -7) end)
+	self.switchButton:SetScript("OnMouseUp", function() E:Point(this.text, "LEFT", 16, -5) end)
 
 	self.mainFrame:SetScript("OnShow", function() EMB:EmbedShow() end)
 	self.mainFrame:SetScript("OnHide", function() EMB:EmbedHide() end)
@@ -305,17 +304,15 @@ if AS:CheckAddOn("Recount") then
 		end
 		parent.frameName = "Recount_MainWindow"
 
-		Recount_MainWindow:SetParent(parent)
-		Recount_MainWindow:ClearAllPoints()
-		Recount_MainWindow:SetPoint("TOPLEFT", parent, "TOPLEFT", E.PixelMode and -1 or 0, E.PixelMode and 8 or 7)
-		Recount_MainWindow:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", E.PixelMode and 1 or 0, E.PixelMode and -1 or 0)
-
 		Recount.db.profile.Locked = true
 		Recount.db.profile.Scaling = 1
-		Recount.db.profile.ClampToScreen = true
-		Recount.db.profile.FrameStrata = "2-LOW"
-		Recount:SetStrataAndClamp()
 		Recount:LockWindows(true)
+		Recount:ScaleWindows(1)
+
+		Recount_MainWindow:SetParent(parent)
+		Recount_MainWindow:ClearAllPoints()
+		E:Point(Recount_MainWindow, "TOPLEFT", parent, "TOPLEFT", E.PixelMode and -1 or 0, E.PixelMode and 8 or 7)
+		E:Point(Recount_MainWindow, "BOTTOMRIGHT", parent, "BOTTOMRIGHT", E.PixelMode and 1 or 0, E.PixelMode and -1 or 0)
 
 		Recount_MainWindow:StartSizing("BOTTOMLEFT")
 		Recount_MainWindow:StopMovingOrSizing()
@@ -331,93 +328,25 @@ if AS:CheckAddOn("Omen") then
 		end
 		parent.frameName = "OmenAnchor"
 
-		local db = Omen.db
-		db.profile.Scale = 1
-		db.profile.Bar.Spacing = 1
-		db.profile.Background.EdgeSize = 1
-		db.profile.Background.BarInset = 2
-		db.profile.TitleBar.UseSameBG = true
-		db.profile.ShowWith.UseShowWith = false
-		db.profile.Locked = true
-		db.profile.TitleBar.ShowTitleBar = true
-		db.profile.FrameStrata = "2-LOW"
+		local db = Omen.Options
+		db["Skin.Scale"] = 100
+		db["Lock"] = true
 
 		OmenAnchor:SetParent(parent)
 		OmenAnchor:ClearAllPoints()
 		OmenAnchor:SetAllPoints()
 
+		Omen:UpdateDisplay()
+
 		hooksecurefunc(Omen, "SetAnchors", function(self, useDB)
-			if useDB then
-				self.Anchor:SetParent(parent)
-				self.Anchor:SetInside(parent, 0, 0)
+			self.Anchor:SetParent(parent)
+			E:SetInside(self.Anchor, parent, 0, 0)
+
+			if Omen.activeModule then
+				Omen.activeModule:UpdateLayout()
 			end
+			Omen:ResizeBars()
 		end)
-	end
-end
-
-if AS:CheckAddOn("Skada") then
-	EMB["skadaWindows"] = {}
-
-	local function EmbedWindow(window, width, height, point, relativeFrame, relativePoint, ofsx, ofsy)
-		if not window then return end
-		local barmod = Skada.displays["bar"]
-
-		window.db.barwidth = width
-		window.db.background.height = height - (window.db.enabletitle and window.db.barheight or -(E.Border + E.Spacing)) - (E.Border + E.Spacing)
-
-		window.db.spark = false
-		window.db.barslocked = true
-		window.db.enablebackground = true
-
-		window.bargroup:SetParent(relativeFrame)
-		window.bargroup:ClearAllPoints()
-		window.bargroup:SetPoint(point, relativeFrame, relativePoint, ofsx, window.db.reversegrowth and ofsy or -ofsy)
-
-		window.bargroup:SetFrameStrata("LOW")
-
-		barmod.ApplySettings(barmod, window)
-
-		window.bargroup.bgframe:SetFrameStrata("LOW")
-		window.bargroup.bgframe:SetFrameLevel(window.bargroup:GetFrameLevel() - 1)
-	end
-
-	function EMB:EmbedSkada()
-		wipe(self["skadaWindows"])
-		for _, window in pairs(Skada:GetWindows()) do
-			tinsert(self.skadaWindows, window)
-		end
-
-		local db = E.db.addOnSkins.embed
-		local numberToEmbed = 0
-
-		if db.embedType == "SINGLE" then
-			numberToEmbed = 1
-		elseif db.embedType == "DOUBLE" then
-			if db.rightWindow == "Skada" then numberToEmbed = numberToEmbed + 1 end
-			if db.leftWindow == "Skada" then numberToEmbed = numberToEmbed + 1 end
-		end
-
-		local point
-		if numberToEmbed == 1 then
-			local parent = self.leftFrame
-			if db.embedType == "DOUBLE" then
-				parent = db.rightWindow == "Skada" and self.rightFrame or self.leftFrame
-			end
-
-			point = self.skadaWindows[1].db.reversegrowth and "BOTTOMLEFT" or "TOPLEFT"
-			EmbedWindow(self.skadaWindows[1], parent:GetWidth() -(E.Border*2), parent:GetHeight(), point, parent, point, E.Border, E.Border)
-		elseif numberToEmbed == 2 then
-			point = self.skadaWindows[1].db.reversegrowth and "BOTTOMLEFT" or "TOPLEFT"
-			EmbedWindow(self.skadaWindows[1], self.leftFrame:GetWidth() -(E.Border*2), self.leftFrame:GetHeight(), point, self.leftFrame, point, E.Border, E.Border)
-
-			if not self.skadaWindows[2] then
-				E:Print("Please Create Skada Windows 2")
-				return
-			end
-
-			point = self.skadaWindows[2].db.reversegrowth and "BOTTOMRIGHT" or "TOPRIGHT"
-			EmbedWindow(self.skadaWindows[2], self.rightFrame:GetWidth() -(E.Border*2), self.rightFrame:GetHeight(), point, self.rightFrame, point, -E.Border, E.Border)
-		end
 	end
 end
 

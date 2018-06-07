@@ -1,11 +1,6 @@
 local E, L, V, P, G = unpack(ElvUI)
 
 P.addOnSkins = {
-	skadaTemplate = "Default",
-	skadaTemplateGloss = false,
-	skadaTitleTemplate = "Default",
-	skadaTitleTemplateGloss = true,
-
 	dbmBarHeight = 22,
 	dbmFont = "PT Sans Narrow",
 	dbmFontSize = 12,

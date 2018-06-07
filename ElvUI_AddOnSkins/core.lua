@@ -1,78 +1,16 @@
-local E, L, V, P, G, _ = unpack(ElvUI)
-local EP = LibStub("LibElvUIPlugin-1.0", true)
-local AS = E:NewModule("AddOnSkins")
-
-local AddOnName = ...
+local E, L, V, P, G = unpack(ElvUI);
+local EP = LibStub("LibElvUIPlugin-1.0", true);
+local AS = E:NewModule("AddOnSkins");
 
 local find, lower, match, trim = string.find, string.lower, string.match, string.trim
+local select = select
 
 local GetAddOnInfo = GetAddOnInfo
 
 local addonList = {
-	"Omen",
-	"Recount",
-	"SexyCooldown",
-	"DBM",
-	"Skada",
-	"Auctionator",
-	"BugSack",
-	"CallToArms",
-	"Postal",
-	"QuestPointer",
-	"Clique",
-	"FloAspectBar",
-	"FloTotemBar",
-	"Spy",
 	"AtlasLoot",
 	"Atlas",
-	"FlightMap",
-	"WeakAuras",
-	"Overachiever",
-	"OpenGF",
-	"KHunterTimers",
-	"TellMeWhen",
-	"GearScore",
-	"AllStats",
-	"BlackList",
-	"GnomishVendorShrinker",
-	"ACP",
-	"EveryQuest",
-	"_NPCScan",
-	"MoveAnything",
-	"VanasKoS",
-	"BindPad",
-	"ZygorGuidesViewer",
-	"ZygorTalentAdvisor",
-	"WowLua",
-	"ChatBar",
-	"Skillet",
-	"TotemTimers",
-	"PlateBuffs",
-	"MageNuggets",
-	"InspectEquip",
-	"AdvancedTradeSkillWindow",
-	"AtlasQuest",
-	"AckisRecipeList",
-	"LightHeaded",
-	"Carbonite",
-	"Enchantrix",
-	"FishingBuddy",
-	"Talented",
-	"TinyPad",
-	"ZOMGBuffs",
-	"BuyEmAll",
-	"Doom_CooldownPulse",
-	"AdiBags",
-	"PallyPower",
-	"KarniCrap",
-	"TradeskillInfo",
-	"PAB",
-	"EPGP",
-	"EPGP_LootMaster",
-	"RaidRoll",
-	"RaidCooldowns",
-	"EventAlert",
-	"WIM",
+	"WowLuaVanilla",
 }
 
 AS.addOns = {}
@@ -139,8 +77,8 @@ local function getOptions()
 						order = 1,
 						type = "group",
 						name = L["AddOn Skins"],
-						get = function(info) return E.private.addOnSkins[info[#info]]; end,
-						set = function(info, value) E.private.addOnSkins[info[#info]] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						get = function(info) return E.private.addOnSkins[info[getn(info)]]; end,
+						set = function(info, value) E.private.addOnSkins[info[getn(info)]] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
 						args = {
 							header = {
 								order = 1,
@@ -153,8 +91,8 @@ local function getOptions()
 						order = 2,
 						type = "group",
 						name = L["Blizzard Skins"],
-						get = function(info) return E.private.addOnSkins[info[#info]]; end,
-						set = function(info, value) E.private.addOnSkins[info[#info]] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						get = function(info) return E.private.addOnSkins[info[getn(info)]]; end,
+						set = function(info, value) E.private.addOnSkins[info[getn(info)]] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
 						args = {
 							header = {
 								order = 1,
@@ -171,7 +109,7 @@ local function getOptions()
 				}
 			},
 			misc = {
-				order = 2,
+				order = 3,
 				type = "group",
 				name = L["Misc Options"],
 				childGroups = "tab",
@@ -181,60 +119,13 @@ local function getOptions()
 						type = "header",
 						name = L["Misc Options"],
 					},
-					skadaGroup = {
+					dbmGroup = {
 						order = 2,
 						type = "group",
-						name = "Skada",
-						get = function(info) return E.db.addOnSkins[info[#info]] end,
-						set = function(info, value) E.db.addOnSkins[info[#info]] = value Skada:ApplySettings() end,
-						disabled = function() return not AS:CheckAddOn("Skada") end,
-						args = {
-							skadaTemplate = {
-								order = 1,
-								type = "select",
-								name = L["Template"],
-								values = {
-									["Default"] = L["Default"],
-									["Transparent"] = L["Transparent"],
-									["NoBackdrop"] = NONE
-								}
-							},
-							skadaTemplateGloss = {
-								order = 2,
-								type = "toggle",
-								name = L["Template Gloss"],
-								disabled = function() return E.db.addOnSkins.skadaTemplate ~= "Default" or not AS:CheckAddOn("Skada") end
-							},
-							spacer = {
-								order = 3,
-								type = "description",
-								name = ""
-							},
-							skadaTitleTemplate = {
-								order = 4,
-								type = "select",
-								name = L["Title Template"],
-								values = {
-									["Default"] = L["Default"],
-									["Transparent"] = L["Transparent"],
-									["NoBackdrop"] = NONE
-								}
-							},
-							skadaTitleTemplateGloss = {
-								order = 5,
-								type = "toggle",
-								name = L["Title Template Gloss"],
-								disabled = function() return E.db.addOnSkins.skadaTitleTemplate ~= "Default" or not AS:CheckAddOn("Skada") end
-							}
-						}
-					},
-					dbmGroup = {
-						order = 3,
-						type = "group",
 						name = "DBM",
-						get = function(info) return E.db.addOnSkins[info[#info]] end,
-						set = function(info, value) E.db.addOnSkins[info[#info]] = value DBM.Bars:ApplyStyle() DBM.BossHealth:UpdateSettings() end,
-						disabled = function() return not AS:CheckAddOn("DBM-Core") end,
+						get = function(info) return E.db.addOnSkins[info[getn(info)]]; end,
+						set = function(info, value) E.db.addOnSkins[info[getn(info)]] = value; DBM.Bars:ApplyStyle(); DBM.BossHealth:UpdateSettings(); end,
+						disabled = function() return not AS:CheckAddOn("DBM_API"); end,
 						args = {
 							dbmBarHeight = {
 								order = 1,
@@ -261,7 +152,7 @@ local function getOptions()
 								type = "select",
 								name = L["Font Outline"],
 								values = {
-									["NONE"] = L["None"],
+									["NONE"] = "NONE",
 									["OUTLINE"] = "OUTLINE",
 									["MONOCHROMEOUTLINE"] = "MONOCROMEOUTLINE",
 									["THICKOUTLINE"] = "THICKOUTLINE"
@@ -270,12 +161,12 @@ local function getOptions()
 						}
 					},
 					waGroup = {
-						order = 4,
+						order = 3,
 						type = "group",
 						name = "WeakAuras",
-						get = function(info) return E.db.addOnSkins[info[#info]] end,
-						set = function(info, value) E.db.addOnSkins[info[#info]] = value E:StaticPopup_Show("PRIVATE_RL") end,
-						disabled = function() return not AS:CheckAddOn("WeakAuras") end,
+						get = function(info) return E.db.addOnSkins[info[getn(info)]]; end,
+						set = function(info, value) E.db.addOnSkins[info[getn(info)]] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						disabled = function() return not AS:CheckAddOn("WeakAuras"); end,
 						args = {
 							weakAuraAuraBar = {
 								order = 1,
@@ -290,12 +181,12 @@ local function getOptions()
 						}
 					},
 					chatBarGroup = {
-						order = 5,
+						order = 4,
 						type = "group",
 						name = "ChatBar",
-						get = function(info) return E.db.addOnSkins[info[#info]] end,
-						set = function(info, value) E.db.addOnSkins[info[#info]] = value ChatBar_UpdateButtonOrientation() ChatBar_UpdateButtons() end,
-						disabled = function() return not AS:CheckAddOn("ChatBar") end,
+						get = function(info) return E.db.addOnSkins[info[getn(info)]]; end,
+						set = function(info, value) E.db.addOnSkins[info[getn(info)]] = value; ChatBar_UpdateButtonOrientation(); ChatBar_UpdateButtons(); end,
+						disabled = function() return not AS:CheckAddOn("ChatBar"); end,
 						args = {
 							chatBarSize = {
 								order = 1,
@@ -336,16 +227,16 @@ local function getOptions()
 				}
 			},
 			embed = {
-				order = 3,
+				order = 4,
 				type = "group",
 				name = "Embed Settings",
-				get = function(info) return E.db.addOnSkins.embed[info[#info]] end,
-				set = function(info, value) E.db.addOnSkins.embed[info[#info]] = value E:GetModule("EmbedSystem"):EmbedUpdate() end,
+				get = function(info) return E.db.addOnSkins.embed[info[getn(info)]] end,
+				set = function(info, value) E.db.addOnSkins.embed[info[getn(info)]] = value; E:GetModule("EmbedSystem"):EmbedUpdate() end,
 				args = {
 					desc = {
 						order = 1,
 						type = "description",
-						name = "Settings to control Embedded AddOns: Available Embeds: Omen | Skada | Recount ",
+						name = "Settings to control Embedded AddOns: Available Embeds: Recount | Omen",
 					},
 					embedType = {
 						order = 2,
@@ -363,8 +254,7 @@ local function getOptions()
 						name = L["Left Panel"],
 						values = {
 							["Recount"] = "Recount",
-							["Omen"] = "Omen",
-							["Skada"] = "Skada"
+							["Omen"] = "Omen"
 						},
 						disabled = function() return E.db.addOnSkins.embed.embedType == "DISABLE" end,
 					},
@@ -374,8 +264,7 @@ local function getOptions()
 						name = L["Right Panel"],
 						values = {
 							["Recount"] = "Recount",
-							["Omen"] = "Omen",
-							["Skada"] = "Skada"
+							["Omen"] = "Omen"
 						},
 						disabled = function() return E.db.addOnSkins.embed.embedType ~= "DOUBLE" end,
 					},
@@ -417,7 +306,7 @@ local function getOptions()
 end
 
 function AS:Initialize()
-	EP:RegisterPlugin(AddOnName, getOptions)
+	EP:RegisterPlugin("ElvUI_AddOnSkins", getOptions)
 
 	if E.db.addOnSkins.embed.left then
 		E.db.addOnSkins.embed.leftWindow = E.db.addOnSkins.embed.left

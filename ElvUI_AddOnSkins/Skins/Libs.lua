@@ -14,11 +14,11 @@ local function SkinDewdrop2()
 	local frame
 	local i = 1
 
-	while _G["Dewdrop20Level" .. i] do
-		frame = _G["Dewdrop20Level" .. i]
+	while _G["Dewdrop20Level"..i] do
+		frame = _G["Dewdrop20Level"..i]
 
 		if not frame.isSkinned then
-			frame:SetTemplate("Transparent")
+			E:SetTemplate(frame, "Transparent")
 
 			select(1, frame:GetChildren()):Hide()
 			frame.SetBackdropColor = E.noop
@@ -33,13 +33,13 @@ local function SkinDewdrop2()
 	i = 1
 	while _G["Dewdrop20Button" .. i] do
 		if not _G["Dewdrop20Button" .. i].isHook then
-			_G["Dewdrop20Button" .. i]:HookScript("OnEnter", function(self)
+			HookScript(_G["Dewdrop20Button" .. i], "OnEnter", function(self)
 				if not self.disabled and self.hasArrow then
 					if not dewdropEditBoxFrame and self.hasEditBox then
 						dewdropEditBoxFrame = AS:FindFrameBySizeChild({"EditBox"}, 200, 40)
 
 						if dewdropEditBoxFrame then
-							dewdropEditBoxFrame:SetTemplate("Transparent")
+							E:SetTemplate(dewdropEditBoxFrame, "Transparent")
 							S:HandleEditBox(dewdropEditBoxFrame.editBox)
 							dewdropEditBoxFrame.editBox:DisableDrawLayer("BACKGROUND")
 						end
@@ -48,7 +48,7 @@ local function SkinDewdrop2()
 						dewdropSliderFrame = AS:FindFrameBySizeChild({"Slider", "EditBox"}, 100, 170)
 
 						if dewdropSliderFrame then
-							dewdropSliderFrame:SetTemplate("Transparent")
+							E:SetTemplate(dewdropSliderFrame, "Transparent")
 							S:HandleSliderFrame(dewdropSliderFrame.slider)
 							S:HandleEditBox(dewdropSliderFrame.currentText)
 							dewdropSliderFrame.currentText:DisableDrawLayer("BACKGROUND")
@@ -78,7 +78,7 @@ local function SkinTablet2(lib)
 				frame = _G["Tablet20DetachedFrame" .. i]
 
 				if not frame.isSkinned then
-					frame:SetTemplate("Transparent")
+					E:SetTemplate(frame, "Transparent")
 					S:HandleSliderFrame(frame.slider)
 
 					frame.isSkinned = true
@@ -91,7 +91,7 @@ local function SkinTablet2(lib)
 
 	if not S:IsHooked(lib, "Open") then
 		S:SecureHook(lib, "Open", function(self, fakeParent, parent)
-			_G["Tablet20Frame"]:SetTemplate("Transparent")
+			E:SetTemplate(_G["Tablet20Frame"], "Transparent")
 			SkinDetachedFrame(self, fakeParent, parent)
 		end)
 	end
@@ -107,32 +107,32 @@ local function SkinRockConfig(lib)
 	local function SkinMainFrame(self)
 		if self.base.isSkinned then return end
 
-		self.base:SetTemplate("Transparent")
-		self.base.header:StripTextures()
+		E:SetTemplate(self.base, "Transparent")
+		E:StripTextures(self.base.header)
 		S:HandleCloseButton(self.base.closeButton, self.base)
 
-		self.base.treeView:SetTemplate("Transparent")
+		E:SetTemplate(self.base.treeView, "Transparent")
 		S:HandleScrollBar(self.base.treeView.scrollBar)
 		S:HandleDropDownBox(self.base.addonChooser)
 
-		self.base.addonChooser.text:Height(20)
-		self.base.addonChooser.text:SetTemplate("Transparent")
+		E:Height(self.base.addonChooser.text, 20)
+		E:SetTemplate(self.base.addonChooser.text, "Transparent")
 		S:HandleNextPrevButton(self.base.addonChooser.button, true)
-		
+
 		local pullout = _G[self.base.mainPane:GetName().."_ChoicePullout"]
 		if pullout then
-			pullout:SetTemplate("Transparent")
+			E:SetTemplate(pullout, "Transparent")
 		else
 			S:SecureHookScript(self.base.addonChooser.button, "OnClick", function(self)
-				_G[lib.base.mainPane:GetName().."_ChoicePullout"]:SetTemplate("Transparent")
+				E:SetTemplate(_G[lib.base.mainPane:GetName().."_ChoicePullout"], "Transparent")
 				S:Unhook(self, "OnClick")
 			end)
 		end
 
-		self.base.mainPane:SetTemplate("Transparent")
+		E:SetTemplate(self.base.mainPane, "Transparent")
 		S:HandleScrollBar(self.base.mainPane.scrollBar)
 
-		self.base.treeView.sizer:SetTemplate("Transparent")
+		E:SetTemplate(self.base.treeView.sizer, "Transparent")
 
 		self.base.isSkinned = true
 	end
@@ -163,14 +163,14 @@ function AS:SkinLibrary(name)
 		local AceAddon = LibStub("AceAddon-2.0", true)
 		if AceAddon then
 			S:SecureHook(AceAddon.prototype, "PrintAddonInfo", function()
-				AceAddon20AboutFrame:SetTemplate("Transparent")
+				E:SetTemplate(AceAddon20AboutFrame, "Transparent")
 				S:HandleButton(AceAddon20AboutFrameButton)
 				S:HandleButton(AceAddon20AboutFrameDonateButton)
 
 				S:Unhook(AceAddon.prototype, "PrintAddonInfo")
 			end)
 			S:SecureHook(AceAddon.prototype, "OpenDonationFrame", function()
-				AceAddon20Frame:SetTemplate("Transparent")
+				E:SetTemplate(AceAddon20Frame, "Transparent")
 				S:HandleScrollBar(AceAddon20FrameScrollFrameScrollBar)
 				S:HandleButton(AceAddon20FrameButton)
 
@@ -197,7 +197,7 @@ function AS:SkinLibrary(name)
 				local tooltip = S.hooks[self].GetFreeExtraTipObject(self)
 
 				if not tooltip.isSkinned then
-					tooltip:SetTemplate("Transparent")
+					E:SetTemplate(tooltip, "Transparent")
 					tooltip.isSkinned = true
 				end
 
@@ -215,10 +215,10 @@ function AS:SkinLibrary(name)
 		local LZF = LibStub("ZFrame-1.0", true)
 		if LZF and not S:IsHooked(LZF, "Create") then
 			S:RawHook(LZF, "Create", function(self, ...)
-				local frame = S.hooks[self].Create(self, ...)
+				local frame = S.hooks[self].Create(self, unpack(arg))
 
-				frame.ZMain:SetTemplate("Transparent")
-				frame.ZMain.close:Size(32)
+				E:SetTemplate(frame.ZMain, "Transparent")
+				E:Size(frame.ZMain.close, 32)
 				S:HandleCloseButton(frame.ZMain.close, frame.ZMain)
 
 				return frame

@@ -1,7 +1,6 @@
-local E, L, V, P, G, _ = unpack(ElvUI)
+local E, L, V, P, G = unpack(ElvUI)
 local AS = E:GetModule("AddOnSkins")
 
-local select = select
 local pairs = pairs
 
 local EnumerateFrames = EnumerateFrames
@@ -77,7 +76,7 @@ function AS:FindFrameBySizeChild(childTypes, width, height)
 				if E:Round(obj:GetWidth()) == width and E:Round(obj:GetHeight()) == height then
 					local childs = {}
 					for _, child in pairs({obj:GetChildren()}) do
-						childs[#childs + 1] = child:GetObjectType()
+						childs[getn(childs) + 1] = child:GetObjectType()
 					end
 
 					local matched = 0
@@ -89,7 +88,7 @@ function AS:FindFrameBySizeChild(childTypes, width, height)
 						end
 					end
 
-					if matched == #childTypes then
+					if matched == getn(childTypes) then
 						frame = obj
 						break
 					end
@@ -131,7 +130,7 @@ function AS:FindFrameByPoint(point1, relativeTo, point2, x, y, multipleFrames)
 				and y == childY
 				then
 					if multipleFrames then
-						frame[#frame + 1] = obj
+						frame[getn(frame) + 1] = obj
 					else
 						frame = obj
 						break

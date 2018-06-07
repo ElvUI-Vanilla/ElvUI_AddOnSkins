@@ -31,16 +31,33 @@ local function LoadSkin()
 	S:HandleDropDownBox(AtlasFrameDropDownType)
 	S:HandleDropDownBox(AtlasFrameDropDown)
 
+	S:HandleEditBox(AtlasSearchEditBox)
+	E:Height(AtlasSearchEditBox, 22)
+
+	S:HandleButton(AtlasSwitchButton)
+	E:Height(AtlasSwitchButton, 24)
+	S:HandleButton(AtlasSearchButton)
+	E:Height(AtlasSearchButton, 24)
+	E:Point(AtlasSearchButton, "LEFT", AtlasSearchEditBox, "RIGHT", 3, 0)
+	S:HandleButton(AtlasSearchClearButton)
+	E:Height(AtlasSearchClearButton, 24)
+	E:Point(AtlasSearchClearButton, "LEFT", AtlasSearchButton, "RIGHT", 2, 0)
 	S:HandleButton(AtlasFrameOptionsButton)
+
+	S:HandleScrollBar(AtlasScrollBarScrollBar)
 
 	S:HandleCheckBox(AtlasOptionsFrameToggleButton)
 	S:HandleCheckBox(AtlasOptionsFrameAutoSelect)
-	S:HandleCheckBox(AtlasOptionsFrameReplaceWorldMap)
 	S:HandleCheckBox(AtlasOptionsFrameRightClick)
 	S:HandleCheckBox(AtlasOptionsFrameAcronyms)
+	S:HandleCheckBox(AtlasOptionsFrameClamped)
 
-	S:HandleSliderFrame(SliderButtonPos)
-	S:HandleSliderFrame(SliderAlpha)
+	S:HandleSliderFrame(AtlasOptionsFrameSliderButtonPos)
+	S:HandleSliderFrame(AtlasOptionsFrameSliderButtonRad)
+	S:HandleSliderFrame(AtlasOptionsFrameSliderAlpha)
+	S:HandleSliderFrame(AtlasOptionsFrameSliderScale)
+
+	S:HandleDropDownBox(AtlasOptionsFrameDropDownCats)
 
 	S:HandleButton(AtlasOptionsFrameResetPosition)
 	S:HandleButton(AtlasOptionsFrameDone)
