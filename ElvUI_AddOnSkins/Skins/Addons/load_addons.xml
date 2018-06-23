@@ -1,5 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<Script file="atlasLoot.lua"/>
 	<Script file="atlas.lua"/>
+	<Script file="atlasLoot.lua"/>
+	<Script file="atlasQuest.lua"/>
 	<Script file="wowLuaVanilla.lua"/>
 </Ui>

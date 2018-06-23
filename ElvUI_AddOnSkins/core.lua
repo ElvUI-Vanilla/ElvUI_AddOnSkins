@@ -8,8 +8,9 @@ local select = select
 local GetAddOnInfo = GetAddOnInfo
 
 local addonList = {
-	"AtlasLoot",
 	"Atlas",
+	"AtlasLoot",
+	"AtlasQuest",
 	"WowLuaVanilla",
 }
 
