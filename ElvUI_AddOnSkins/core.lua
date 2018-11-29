@@ -1,18 +1,43 @@
-local E, L, V, P, G = unpack(ElvUI);
+local E, L, V, P, G = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
 local EP = LibStub("LibElvUIPlugin-1.0", true);
 local AS = E:NewModule("AddOnSkins");
 
-local find, lower, match, trim = string.find, string.lower, string.match, string.trim
-local select = select
-
+--Cache global variables
+--Lua functions
+local pairs, select = pairs, select
+local getn = table.getn
+local find, format, lower, match, trim = string.find, string.format, string.lower, string.match, string.trim
+--WoW API / Variables
 local GetAddOnInfo = GetAddOnInfo
+local GetNumAddOns = GetNumAddOns
+local IsAddOnLoaded = IsAddOnLoaded
+local DISABLE, FONT_SIZE, NONE = DISABLE, FONT_SIZE, NONE
 
 local addonList = {
 	"Atlas",
 	"AtlasLoot",
 	"AtlasQuest",
+	"DPSMate",
+	"KLHThreatMeter",
 	"WowLuaVanilla",
 }
+
+local function ColorizeVersion(version)
+	return format(" |cffff7d0a%s|r", version)
+end
+local SUPPORTED_ADDONS_STRING = ""
+
+local SUPPORTED_ADDONS = {
+	"Atlas"..ColorizeVersion("1.8.1 & 1.13.0-Backport"),			-- 1.8.1 & 1.13.0-Backport
+	"AtlasLoot"..ColorizeVersion("1.18.02 & 4.07.01-Backport"),		-- 1.18.02 & 4.07.01-Backport
+	"AtlasQuest"..ColorizeVersion("4.1.3"),							-- 4.1.3
+	"DPSMate"..ColorizeVersion("130"),								-- 130
+	"KLHThreatMeter"..ColorizeVersion("17.35"),						-- 17.35
+	"WowLuaVanilla"..ColorizeVersion("v40300-1.0.2-71bf340 "),		-- v40300-1.0.2-71bf340
+}
+for _, supportedAddOn in pairs(SUPPORTED_ADDONS) do
+	SUPPORTED_ADDONS_STRING = SUPPORTED_ADDONS_STRING.."\n"..supportedAddOn
+end
 
 AS.addOns = {}
 
@@ -57,14 +82,54 @@ local positionValues = {
 }
 
 local function getOptions()
+	if not E.Options.args.elvuiPlugins then
+		E.Options.args.elvuiPlugins = {
+			order = 50,
+			type = "group",
+			name = "|cff175581E|r|cffC4C4C4lvUI_|r|cff175581P|r|cffC4C4C4lugins|r",
+			args = {
+				header = {
+					order = 0,
+					type = "header",
+					name = "|cff175581E|r|cffC4C4C4lvUI_|r|cff175581P|r|cffC4C4C4lugins|r"
+				},
+				addOnSkinsShortcut = {
+					type = "execute",
+					name = ColorizeSettingName(L["AddOn Skins"]),
+					func = function()
+						if IsAddOnLoaded("ElvUI_Config") then
+							local ACD = LibStub("AceConfigDialog-3.0")
+							ACD:SelectGroup("ElvUI", "elvuiPlugins", "addOnSkins", "addOns")
+						end
+					end
+				}
+			}
+		}
+	elseif not E.Options.args.elvuiPlugins.args.addOnSkinsShortcut then
+		E.Options.args.elvuiPlugins.args.addOnSkinsShortcut = {
+			type = "execute",
+			name = ColorizeSettingName(L["AddOn Skins"]),
+			func = function()
+				if IsAddOnLoaded("ElvUI_Config") then
+					local ACD = LibStub("AceConfigDialog-3.0")
+					ACD:SelectGroup("ElvUI", "elvuiPlugins", "addOnSkins", "addOns")
+				end
+			end
+		}
+	end
+
 	local options = {
-		order = 50,
 		type = "group",
 		name = ColorizeSettingName(L["AddOn Skins"]),
 		childGroups = "tab",
 		args = {
-			skins = {
+			header = {
 				order = 1,
+				type = "header",
+				name = L["AddOn Skins"]
+			},
+			skins = {
+				order = 2,
 				type = "group",
 				name = L["Skins"],
 				childGroups = "tab",
@@ -78,8 +143,8 @@ local function getOptions()
 						order = 1,
 						type = "group",
 						name = L["AddOn Skins"],
-						get = function(info) return E.private.addOnSkins[info[getn(info)]]; end,
-						set = function(info, value) E.private.addOnSkins[info[getn(info)]] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						get = function(info) return E.private.addOnSkins[info[getn(info)]] end,
+						set = function(info, value) E.private.addOnSkins[info[getn(info)]] = value E:StaticPopup_Show("PRIVATE_RL") end,
 						args = {
 							header = {
 								order = 1,
@@ -92,8 +157,8 @@ local function getOptions()
 						order = 2,
 						type = "group",
 						name = L["Blizzard Skins"],
-						get = function(info) return E.private.addOnSkins[info[getn(info)]]; end,
-						set = function(info, value) E.private.addOnSkins[info[getn(info)]] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						get = function(info) return E.private.addOnSkins[info[getn(info)]] end,
+						set = function(info, value) E.private.addOnSkins[info[getn(info)]] = value E:StaticPopup_Show("PRIVATE_RL") end,
 						args = {
 							header = {
 								order = 1,
@@ -103,7 +168,7 @@ local function getOptions()
 							Blizzard_WorldStateFrame = {
 								type = "toggle",
 								name = "WorldStateFrame",
-								desc = L["TOGGLESKIN_DESC"],
+								desc = L["TOGGLESKIN_DESC"]
 							}
 						}
 					}
@@ -124,104 +189,44 @@ local function getOptions()
 						order = 2,
 						type = "group",
 						name = "DBM",
-						get = function(info) return E.db.addOnSkins[info[getn(info)]]; end,
-						set = function(info, value) E.db.addOnSkins[info[getn(info)]] = value; DBM.Bars:ApplyStyle(); DBM.BossHealth:UpdateSettings(); end,
-						disabled = function() return not AS:CheckAddOn("DBM_API"); end,
+						get = function(info) return E.db.addOnSkins[info[getn(info)]] end,
+						set = function(info, value) E.db.addOnSkins[info[getn(info)]] = value DBM.Bars:ApplyStyle() DBM.BossHealth:UpdateSettings() end,
+						disabled = function() return not AS:CheckAddOn("DBM_API") end,
 						args = {
 							dbmBarHeight = {
 								order = 1,
 								type = "range",
 								name = "Bar Height",
-								min = 6, max = 60,
-								step = 1
+								min = 6, max = 60, step = 1
+							},
+							spacer = {
+								order = 2,
+								type = "description",
+								name = ""
 							},
 							dbmFont = {
-								order = 2,
+								order = 3,
 								type = "select",
 								dialogControl = "LSM30_Font",
 								name = L["Font"],
 								values = AceGUIWidgetLSMlists.font
 							},
 							dbmFontSize = {
-								order = 3,
+								order = 4,
 								type = "range",
-								name = L["Font Size"],
+								name = FONT_SIZE,
 								min = 6, max = 22, step = 1
 							},
 							dbmFontOutline = {
-								order = 4,
+								order = 5,
 								type = "select",
 								name = L["Font Outline"],
 								values = {
-									["NONE"] = "NONE",
+									["NONE"] = NONE,
 									["OUTLINE"] = "OUTLINE",
 									["MONOCHROMEOUTLINE"] = "MONOCROMEOUTLINE",
 									["THICKOUTLINE"] = "THICKOUTLINE"
 								}
-							}
-						}
-					},
-					waGroup = {
-						order = 3,
-						type = "group",
-						name = "WeakAuras",
-						get = function(info) return E.db.addOnSkins[info[getn(info)]]; end,
-						set = function(info, value) E.db.addOnSkins[info[getn(info)]] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
-						disabled = function() return not AS:CheckAddOn("WeakAuras"); end,
-						args = {
-							weakAuraAuraBar = {
-								order = 1,
-								type = "toggle",
-								name = L["AuraBar Backdrop"]
-							},
-							weakAuraIconCooldown = {
-								order = 2,
-								type = "toggle",
-								name = L["Icon Cooldown"]
-							}
-						}
-					},
-					chatBarGroup = {
-						order = 4,
-						type = "group",
-						name = "ChatBar",
-						get = function(info) return E.db.addOnSkins[info[getn(info)]]; end,
-						set = function(info, value) E.db.addOnSkins[info[getn(info)]] = value; ChatBar_UpdateButtonOrientation(); ChatBar_UpdateButtons(); end,
-						disabled = function() return not AS:CheckAddOn("ChatBar"); end,
-						args = {
-							chatBarSize = {
-								order = 1,
-								type = "range",
-								name = "Button Size",
-								min = 0, max = 60,
-								step = 1
-							},
-							chatBarSpacing = {
-								order = 2,
-								type = "range",
-								name = "Button Spacing",
-								min = 0, max = 60,
-								step = 1
-							},
-							chatBarTextPoint = {
-								order = 3,
-								type = "select",
-								name = L["Text Position"],
-								values = positionValues
-							},
-							chatBarTextXOffset = {
-								order = 4,
-								type = "range",
-								name = L["Text xOffset"],
-								desc = L["Offset position for text."],
-								min = -300, max = 300, step = 1
-							},
-							chatBarTextYOffset = {
-								order = 5,
-								type = "range",
-								name = L["Text yOffset"],
-								desc = L["Offset position for text."],
-								min = -300, max = 300, step = 1
 							}
 						}
 					}
@@ -232,78 +237,98 @@ local function getOptions()
 				type = "group",
 				name = "Embed Settings",
 				get = function(info) return E.db.addOnSkins.embed[info[getn(info)]] end,
-				set = function(info, value) E.db.addOnSkins.embed[info[getn(info)]] = value; E:GetModule("EmbedSystem"):EmbedUpdate() end,
+				set = function(info, value) E.db.addOnSkins.embed[info[getn(info)]] = value E:GetModule("EmbedSystem"):EmbedUpdate() end,
 				args = {
-					desc = {
+					header = {
 						order = 1,
+						type = "header",
+						name = L["Embed Settings"]
+					},
+					desc = {
+						order = 2,
 						type = "description",
-						name = "Settings to control Embedded AddOns: Available Embeds: Recount | Omen",
+						name = "Settings to control Embedded AddOns: Available Embeds: DPSMate | KLHThreatMeter"
 					},
 					embedType = {
-						order = 2,
+						order = 3,
 						type = "select",
 						name = L["Embed Type"],
 						values = {
-							["DISABLE"] = L["Disable"],
+							["DISABLE"] = DISABLE,
 							["SINGLE"] = L["Single"],
 							["DOUBLE"] = L["Double"]
-						},
+						}
 					},
 					leftWindow = {
-						order = 3,
+						order = 4,
 						type = "select",
 						name = L["Left Panel"],
 						values = {
-							["Recount"] = "Recount",
-							["Omen"] = "Omen"
+							["DPSMate"] = "DPSMate",
+							["KLHThreatMeter"] = "KLHThreatMeter"
 						},
-						disabled = function() return E.db.addOnSkins.embed.embedType == "DISABLE" end,
+						disabled = function() return E.db.addOnSkins.embed.embedType == "DISABLE" end
 					},
 					rightWindow = {
-						order = 4,
+						order = 5,
 						type = "select",
 						name = L["Right Panel"],
 						values = {
-							["Recount"] = "Recount",
-							["Omen"] = "Omen"
+							["DPSMate"] = "DPSMate",
+							["KLHThreatMeter"] = "KLHThreatMeter"
 						},
-						disabled = function() return E.db.addOnSkins.embed.embedType ~= "DOUBLE" end,
+						disabled = function() return E.db.addOnSkins.embed.embedType ~= "DOUBLE" end
 					},
 					leftWindowWidth = {
+						order = 6,
 						type = "range",
-						order = 5,
 						name = L["Left Window Width"],
-						min = 100,
-						max = 300,
-						step = 1,
+						min = 100, max = 300, step = 1
 					},
 					hideChat = {
-						name = "Hide Chat Frame",
-						order = 6,
+						order = 7,
 						type = "select",
+						name = "Hide Chat Frame",
 						values = E:GetModule("EmbedSystem"):GetChatWindowInfo(),
-						disabled = function() return E.db.addOnSkins.embed.embedType == "DISABLE" end,
+						disabled = function() return E.db.addOnSkins.embed.embedType == "DISABLE" end
 					},
 					rightChatPanel = {
+						order = 8,
 						type = "toggle",
-						name = "Embed into Right Chat Panel",
-						order = 7,
+						name = "Embed into Right Chat Panel"
 					},
 					belowTopTab = {
+						order = 9,
 						type = "toggle",
-						name = "Embed Below Top Tab",
-						order = 8,
-					},
-				},
+						name = "Embed Below Top Tab"
+					}
+				}
 			},
-		},
+			supportedAddOns = {
+				order = 7,
+				type = "group",
+				name = L["Supported AddOns"],
+				args = {
+					header = {
+						order = 1,
+						type = "header",
+						name = L["Supported AddOns"]
+					},
+					text = {
+						order = 2,
+						type = "description",
+						name = SUPPORTED_ADDONS_STRING
+					}
+				}
+			}
+		}
 	}
 
 	for _, addonName in pairs(addonList) do
 		AS:RegisterAddonOption(addonName, options)
 	end
 
-	E.Options.args.addOnSkins = options
+	E.Options.args.elvuiPlugins.args.addOnSkins = options
 end
 
 function AS:Initialize()

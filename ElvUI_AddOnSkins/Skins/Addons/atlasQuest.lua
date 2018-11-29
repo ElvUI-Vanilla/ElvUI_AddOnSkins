@@ -1,10 +1,10 @@
-local E, L, V, P, G = unpack(ElvUI)
-local S = E:GetModule("Skins")
+local E, L, V, P, G = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local S = E:GetModule("Skins");
 
--- AtlasQuest v4.2 - https://github.com/Cabro/Atlas/
+-- AtlasQuest v4.1.3
 
 local function LoadSkin()
-	if not E.private.addOnSkins.AtlasQuestCabro then return end
+	if not E.private.addOnSkins.AtlasQuest then return end
 
 	local buttons = {
 		STORYbutton,
@@ -63,7 +63,8 @@ local function LoadSkin()
 
 	E:Size(CLOSEbutton2, 32)
 
-	E:SetTemplate(AtlasQuestTooltip, "Transparent")
+	E:StripTextures(AtlasQuestTooltip)
+	E:CreateBackdrop(AtlasQuestTooltip, "Transparent")
 
 	for i = 1, 6 do
 		_G["AtlasQuestItemframe"..i.."_Icon"]:SetTexCoord(unpack(E.TexCoords));
@@ -104,4 +105,4 @@ local function LoadSkin()
 	end
 end
 
-S:AddCallbackForAddon("AtlasQuestCabro", "AtlasQuestCabro", LoadSkin)
+S:AddCallbackForAddon("AtlasQuest", "AtlasQuest", LoadSkin)

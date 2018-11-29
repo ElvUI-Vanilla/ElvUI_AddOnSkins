@@ -1,5 +1,5 @@
-local E, L, V, P, G = unpack(ElvUI)
-local S = E:GetModule("Skins")
+local E, L, V, P, G = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local S = E:GetModule("Skins");
 
 local captureBarCreate, captureBarUpdate
 local function LoadSkin()
@@ -53,7 +53,7 @@ local function LoadSkin()
 	end
 
 	captureBarUpdate = function(id, value, neutralPercent)
-		local position = 173*(1 - value/100)
+		local position = 173 * (1 - value / 100)
 		local bar = _G["WorldStateCaptureBar"..id]
 		local barSize = 170
 		if not bar.oldValue then
@@ -64,7 +64,7 @@ local function LoadSkin()
 		if neutralPercent == 0 then
 			E:Width(middleBar, 1)
 		else
-			E:Width(middleBar, neutralPercent/100*barSize)
+			E:Width(middleBar, neutralPercent / 100 * barSize)
 		end
 		bar.oldValue = position
 		if bar.spark then

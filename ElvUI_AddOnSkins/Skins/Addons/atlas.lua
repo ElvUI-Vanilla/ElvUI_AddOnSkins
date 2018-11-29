@@ -1,5 +1,7 @@
-local E, L, V, P, G = unpack(ElvUI)
-local S = E:GetModule("Skins")
+local E, L, V, P, G = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local S = E:GetModule("Skins");
+
+-- Atlas 1.8.1 and Atlas 1.13.0 (TBC Backport)
 
 local function LoadSkin()
 	if not E.private.addOnSkins.Atlas then return end
@@ -45,8 +47,14 @@ local function LoadSkin()
 
 		S:HandleButton(AtlasOptionsFrameResetPosition)
 		S:HandleButton(AtlasOptionsFrameDone)
-	elseif ATLAS_VERSION == "1.12.0" then
-		E:StripTextures(AtlasFrame)
+	elseif ATLAS_VERSION == "1.13.0" then
+
+		for i, child in ipairs({AtlasFrame:GetRegions()}) do
+			if i ~= 8 then
+				E:Kill(child) -- E:StripTextures kills the dungeon map
+			end
+		end
+
 		E:SetTemplate(AtlasFrame, "Transparent")
 
 		E:StripTextures(AtlasOptionsFrame)
