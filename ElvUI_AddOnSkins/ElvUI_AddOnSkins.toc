@@ -5,8 +5,8 @@
 ## Notes: AddOn skins for ElvUI :)
 ## RequiredDeps: ElvUI
 
-locales\load_locales.xml
+Locales\Load_Locales.xml
 Settings\Load_Settings.xml
-core.lua
+Core.lua
 Skins\Load_Skins.xml
-Modules\load_modules.xml
+Modules\Load_Modules.xml
