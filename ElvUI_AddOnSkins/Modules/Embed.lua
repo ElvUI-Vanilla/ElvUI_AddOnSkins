@@ -344,6 +344,9 @@ if AS:CheckAddOn("KLHThreatMeter") then
 		KLHTM_Frame:SetAllPoints(parent)
 		KLHTM_Frame:SetFrameStrata("MEDIUM")
 
+		E:Kill(KLHTM_TitleFramePin)
+		E:Kill(KLHTM_TitleFrameUnpin)
+
 		KLHTM_GuiState.pinned = true
 	end
 end

@@ -85,8 +85,6 @@ local function LoadSkin()
 	S:HandleSliderFrame(KLHTM_OptionsFrameRaidRows)
 
 	-- Kill
-	E:Kill(KLHTM_TitleFramePin)
-	E:Kill(KLHTM_TitleFrameUnpin)
 	E:Kill(KLHTM_OptionsFrameGeneralScale)
 	E:Kill(KLHTM_OptionsFrameGeneralHeaderOther)
 end
