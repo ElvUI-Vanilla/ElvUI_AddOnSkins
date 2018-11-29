@@ -14,7 +14,7 @@ local hooksecurefunc = hooksecurefunc
 local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
 
 function EMB:GetChatWindowInfo()
-	local chatTabInfo = {["NONE"] = "NONE"}
+	local chatTabInfo = {[NONE] = NONE}
 	for i = 1, NUM_CHAT_WINDOWS do
 		chatTabInfo["ChatFrame"..i] = _G["ChatFrame"..i.."Tab"]:GetText()
 	end
@@ -23,7 +23,7 @@ end
 
 function EMB:ToggleChatFrame(hide)
 	local chatFrame = E.db.addOnSkins.embed.hideChat
-	if chatFrame == "NONE" then return end
+	if chatFrame == NONE then return end
 
 	if hide then
 		_G[chatFrame].originalParent = _G[chatFrame]:GetParent()

@@ -8,6 +8,6 @@ P.addOnSkins = {
 		rightChatPanel = true,
 		leftWindowWidth = 203,
 		belowTopTab = false,
-		hideChat = "NONE",
+		hideChat = NONE,
 	}
 }
