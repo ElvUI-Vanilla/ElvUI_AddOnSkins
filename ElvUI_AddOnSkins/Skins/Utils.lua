@@ -1,8 +1,10 @@
-local E, L, V, P, G = unpack(ElvUI)
-local AS = E:GetModule("AddOnSkins")
+local E, L, V, P, G = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local AS = E:GetModule("AddOnSkins");
 
+--Cache global variables
+--Lua functions
 local pairs = pairs
-
+--WoW API / Variables
 local EnumerateFrames = EnumerateFrames
 
 function AS:FindChildFrameByPoint(parent, objType, point1, relativeTo, point2, x, y)

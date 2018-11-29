@@ -1,13 +1,15 @@
-local E, L, V, P, G = unpack(ElvUI)
-local EMB = E:NewModule("EmbedSystem")
-local AS = E:GetModule("AddOnSkins")
+local E, L, V, P, G = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local EMB = E:NewModule("EmbedSystem");
+local AS = E:GetModule("AddOnSkins");
 
+--Cache global variables
+--Lua functions
 local _G = _G
 local pairs, tonumber = pairs, tonumber
 local floor = math.floor
 local format, lower, match = string.format, string.lower, string.match
 local tinsert = table.insert
-
+--WoW API / Variables
 local hooksecurefunc = hooksecurefunc
 local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
 
@@ -87,8 +89,8 @@ function EMB:EmbedUpdate()
 
 	self:WindowResize()
 
-	if self:CheckEmbed("Omen") then self:EmbedOmen() end
-	if self:CheckEmbed("Recount") then self:EmbedRecount() end
+	if self:CheckEmbed("KLHThreatMeter") then self:EmbedKLHThreatMeter() end
+	if self:CheckEmbed("DPSMate") then self:EmbedDPSMate() end
 end
 
 function EMB:SetHooks()
@@ -112,9 +114,9 @@ function EMB:SetHooks()
 		end
 	end)
 
-	RightChatToggleButton:RegisterForClicks("AnyDown")
-	RightChatToggleButton:SetScript("OnClick", function(self, btn)
-		if btn == "RightButton" then
+	RightChatToggleButton:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+	RightChatToggleButton:SetScript("OnClick", function()
+		if arg1 == "RightButton" then
 			if E.db.addOnSkins.embed.rightChatPanel then
 				if EMB.mainFrame:IsShown() then
 					EMB.mainFrame:Hide()
@@ -123,15 +125,15 @@ function EMB:SetHooks()
 				end
 			end
 		else
-			if E.db[self.parent:GetName().."Faded"] then
-				E.db[self.parent:GetName().."Faded"] = nil
-				UIFrameFadeIn(self.parent, 0.2, self.parent:GetAlpha(), 1)
-				UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)
+			if E.db[this.parent:GetName().."Faded"] then
+				E.db[this.parent:GetName().."Faded"] = nil
+				UIFrameFadeIn(this.parent, 0.2, this.parent:GetAlpha(), 1)
+				UIFrameFadeIn(this, 0.2, this:GetAlpha(), 1)
 			else
-				E.db[self.parent:GetName().."Faded"] = true
-				UIFrameFadeOut(self.parent, 0.2, self.parent:GetAlpha(), 0)
-				UIFrameFadeOut(self, 0.2, self:GetAlpha(), 0)
-				self.parent.fadeInfo.finishedFunc = self.parent.fadeFunc
+				E.db[this.parent:GetName().."Faded"] = true
+				UIFrameFadeOut(this.parent, 0.2, this.parent:GetAlpha(), 0)
+				UIFrameFadeOut(this, 0.2, this:GetAlpha(), 0)
+				this.parent.fadeInfo.finishedFunc = this.parent.fadeFunc
 			end
 		end
 		EMB:UpdateSwitchButton()
@@ -145,9 +147,9 @@ function EMB:SetHooks()
 		end
 	end)
 
-	LeftChatToggleButton:RegisterForClicks("AnyDown")
-	LeftChatToggleButton:SetScript("OnClick", function(self, btn)
-		if btn == "RightButton" then
+	LeftChatToggleButton:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+	LeftChatToggleButton:SetScript("OnClick", function()
+		if arg1 == "RightButton" then
 			if not E.db.addOnSkins.embed.rightChatPanel then
 				if EMB.mainFrame:IsShown() then
 					EMB.mainFrame:Hide()
@@ -156,15 +158,15 @@ function EMB:SetHooks()
 				end
 			end
 		else
-			if E.db[self.parent:GetName().."Faded"] then
-				E.db[self.parent:GetName().."Faded"] = nil
-				UIFrameFadeIn(self.parent, 0.2, self.parent:GetAlpha(), 1)
-				UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)
+			if E.db[this.parent:GetName().."Faded"] then
+				E.db[this.parent:GetName().."Faded"] = nil
+				UIFrameFadeIn(this.parent, 0.2, this.parent:GetAlpha(), 1)
+				UIFrameFadeIn(this, 0.2, this:GetAlpha(), 1)
 			else
-				E.db[self.parent:GetName().."Faded"] = true
-				UIFrameFadeOut(self.parent, 0.2, self.parent:GetAlpha(), 0)
-				UIFrameFadeOut(self, 0.2, self:GetAlpha(), 0)
-				self.parent.fadeInfo.finishedFunc = self.parent.fadeFunc
+				E.db[this.parent:GetName().."Faded"] = true
+				UIFrameFadeOut(this.parent, 0.2, this.parent:GetAlpha(), 0)
+				UIFrameFadeOut(this, 0.2, this:GetAlpha(), 0)
+				this.parent.fadeInfo.finishedFunc = this.parent.fadeFunc
 			end
 		end
 		EMB:UpdateSwitchButton()
@@ -211,6 +213,10 @@ function EMB:WindowResize()
 	E:Point(self.mainFrame, "BOTTOMLEFT", chatData, topRight, 0, yOffset)
 	E:Point(self.mainFrame, "TOPRIGHT", chatTab, db.belowTopTab and "BOTTOMRIGHT" or "TOPRIGHT", xOffset, db.belowTopTab and -SPACING or 0)
 
+	-- Ensure that the embed-frame is always rendered *above* the chatwindow text to avoid clipping.
+	-- NOTE: "SetFrameStrata" MUST be executed AFTER the "SetParent" call (above), since re-parenting always inherits parent's strata!
+	self.mainFrame:SetFrameStrata("MEDIUM")
+
 	if isDouble then
 		self.leftFrame:ClearAllPoints()
 		E:Point(self.leftFrame, "TOPLEFT", self.mainFrame)
@@ -228,8 +234,8 @@ function EMB:WindowResize()
 	self:UpdateSwitchButton()
 
 	if IsAddOnLoaded("ElvUI_Config") then
-		E.Options.args.addOnSkins.args.embed.args.leftWindowWidth.min = floor(chatPanel:GetWidth() * .25)
-		E.Options.args.addOnSkins.args.embed.args.leftWindowWidth.max = floor(chatPanel:GetWidth() * .75)
+		E.Options.args.elvuiPlugins.args.addOnSkins.args.embed.args.leftWindowWidth.min = floor(chatPanel:GetWidth() * .25)
+		E.Options.args.elvuiPlugins.args.addOnSkins.args.embed.args.leftWindowWidth.max = floor(chatPanel:GetWidth() * .75)
 	end
 end
 
@@ -265,20 +271,20 @@ function EMB:EmbedCreate()
 
 	self.switchButton = CreateFrame("Button", "ElvUI_AddOnSkins_Embed_SwitchButton", UIParent)
 	E:Size(self.switchButton, 120, 32)
-	self.switchButton:RegisterForClicks("AnyUp")
+	self.switchButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 
 	self.switchButton.text = self.switchButton:CreateFontString(nil, "OVERLAY")
 	E:FontTemplate(self.switchButton.text, E.LSM:Fetch("font", E.db.chat.tabFont), E.db.chat.tabFontSize, E.db.chat.tabFontOutline)
 	self.switchButton.text:SetTextColor(unpack(E["media"].rgbvaluecolor))
 	E:Point(self.switchButton.text, "LEFT", 16, -5)
 
-	self.switchButton:SetScript("OnClick", function(self, button)
+	self.switchButton:SetScript("OnClick", function()
 		if EMB.mainFrame:IsShown() then
 			EMB.mainFrame:Hide()
-			self:SetAlpha(0.6)
+			this:SetAlpha(0.6)
 		else
 			EMB.mainFrame:Show()
-			self:SetAlpha(1)
+			this:SetAlpha(1)
 		end
 		EMB:UpdateSwitchButton()
 	end)
@@ -296,57 +302,49 @@ function EMB:EmbedCreate()
 	self:EmbedUpdate()
 end
 
-if AS:CheckAddOn("Recount") then
-	function EMB:EmbedRecount()
+if AS:CheckAddOn("DPSMate") then
+	function EMB:EmbedDPSMate()
 		local parent = self.leftFrame
 		if E.db.addOnSkins.embed.embedType == "DOUBLE" then
-			parent = E.db.addOnSkins.embed.rightWindow == "Recount" and self.rightFrame or self.leftFrame
+			parent = E.db.addOnSkins.embed.rightWindow == "DPSMate" and self.rightFrame or self.leftFrame
 		end
-		parent.frameName = "Recount_MainWindow"
 
-		Recount.db.profile.Locked = true
-		Recount.db.profile.Scaling = 1
-		Recount:LockWindows(true)
-		Recount:ScaleWindows(1)
+		local frame, head
+		for i, v in pairs(DPSMateSettings["windows"]) do
+			if i == 1 then
+				frame = _G["DPSMate_"..v["name"]]
+				head = _G["DPSMate_"..v["name"].."_Head"]
+				parent.frameName = "DPSMate_"..v.name
+				if frame then
+					frame:SetParent(parent)
+					frame:ClearAllPoints()
+					frame:SetAllPoints(parent)
 
-		Recount_MainWindow:SetParent(parent)
-		Recount_MainWindow:ClearAllPoints()
-		E:Point(Recount_MainWindow, "TOPLEFT", parent, "TOPLEFT", E.PixelMode and -1 or 0, E.PixelMode and 8 or 7)
-		E:Point(Recount_MainWindow, "BOTTOMRIGHT", parent, "BOTTOMRIGHT", E.PixelMode and 1 or 0, E.PixelMode and -1 or 0)
+					frame.fborder:Hide()
 
-		Recount_MainWindow:StartSizing("BOTTOMLEFT")
-		Recount_MainWindow:StopMovingOrSizing()
-		Recount:ResizeMainWindow()
+					head:SetFrameStrata("HIGH")
+				end
+			end
+		end
+
+		DPSMateSettings.lock = true
 	end
 end
 
-if AS:CheckAddOn("Omen") then
-	function EMB:EmbedOmen()
+if AS:CheckAddOn("KLHThreatMeter") then
+	function EMB:EmbedKLHThreatMeter()
 		local parent = self.leftFrame
 		if E.db.addOnSkins.embed.embedType == "DOUBLE" then
-			parent = E.db.addOnSkins.embed.rightWindow == "Omen" and self.rightFrame or self.leftFrame
+			parent = E.db.addOnSkins.embed.rightWindow == "KLHThreatMeter" and self.rightFrame or self.leftFrame
 		end
-		parent.frameName = "OmenAnchor"
+		parent.frameName = "KLHTM_Frame"
 
-		local db = Omen.Options
-		db["Skin.Scale"] = 100
-		db["Lock"] = true
+		KLHTM_Frame:SetParent(parent)
+		KLHTM_Frame:ClearAllPoints()
+		KLHTM_Frame:SetAllPoints(parent)
+		KLHTM_Frame:SetFrameStrata("MEDIUM")
 
-		OmenAnchor:SetParent(parent)
-		OmenAnchor:ClearAllPoints()
-		OmenAnchor:SetAllPoints()
-
-		Omen:UpdateDisplay()
-
-		hooksecurefunc(Omen, "SetAnchors", function(self, useDB)
-			self.Anchor:SetParent(parent)
-			E:SetInside(self.Anchor, parent, 0, 0)
-
-			if Omen.activeModule then
-				Omen.activeModule:UpdateLayout()
-			end
-			Omen:ResizeBars()
-		end)
+		KLHTM_GuiState.pinned = true
 	end
 end
 

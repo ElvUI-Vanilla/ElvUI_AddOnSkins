@@ -1,5 +1,7 @@
-local E, L, V, P, G, _ = unpack(ElvUI)
-local S = E:GetModule("Skins")
+local E, L, V, P, G = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local S = E:GetModule("Skins");
+
+-- WoWLuaVanilla v40300-1.0.2-71bf340
 
 local function LoadSkin()
 	if not E.private.addOnSkins.WowLuaVanilla then return end

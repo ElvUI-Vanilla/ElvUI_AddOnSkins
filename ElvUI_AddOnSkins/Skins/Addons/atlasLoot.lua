@@ -1,5 +1,7 @@
-local E, L, V, P, G = unpack(ElvUI)
-local S = E:GetModule("Skins")
+local E, L, V, P, G = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local S = E:GetModule("Skins");
+
+-- AtlasLoot 1.18.02 and AtlasLoot 4.07.01 (TBC Backport)
 
 local function LoadSkin()
 	if not E.private.addOnSkins.AtlasLoot then return end
@@ -54,7 +56,7 @@ local function LoadSkin()
 
 		S:HandleButton(AtlasLootPanel_Sets)
 		S:HandleButton(AtlasLootPanel_Options)
-	elseif version == "4.06.06" then
+	elseif version == "4.07.01" then
 		--[[
 		HookScript(AtlasLootTooltip, "OnShow", function()
 			E:SetTemplate(this, "Transparent")

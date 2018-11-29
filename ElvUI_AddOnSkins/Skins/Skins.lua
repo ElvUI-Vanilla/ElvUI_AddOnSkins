@@ -1,7 +1,9 @@
-local E, L, V, P, G = unpack(ElvUI)
-local AS = E:GetModule("AddOnSkins")
-local S = E:GetModule("Skins")
+local E, L, V, P, G = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+local AS = E:GetModule("AddOnSkins");
+local S = E:GetModule("Skins");
 
+--Cache global variables
+--Lua functions
 local select = select
 
 function AS:Desaturate(frame, point)
