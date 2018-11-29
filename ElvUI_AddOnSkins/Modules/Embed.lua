@@ -309,31 +309,25 @@ if AS:CheckAddOn("DPSMate") then
 			parent = E.db.addOnSkins.embed.rightWindow == "DPSMate" and self.rightFrame or self.leftFrame
 		end
 
-		DPSMateSettings.lock = true
-
-		local frame
+		local frame, head
 		for i, v in pairs(DPSMateSettings["windows"]) do
 			if i == 1 then
 				frame = _G["DPSMate_"..v["name"]]
+				head = _G["DPSMate_"..v["name"].."_Head"]
 				parent.frameName = "DPSMate_"..v.name
 				if frame then
 					frame:SetParent(parent)
 					frame:ClearAllPoints()
 					frame:SetAllPoints(parent)
 
-					E:Point(frame, "TOPLEFT", parent, "TOPLEFT", E.PixelMode and -1 or 0, E.PixelMode and 8 or 7)
-					E:Point(frame, "BOTTOMRIGHT", parent, "BOTTOMRIGHT", E.PixelMode and 1 or 0, E.PixelMode and -1 or 0)
-
 					frame.fborder:Hide()
 
-					_G["DPSMate_"..v["name"].."_Head"]:SetFrameStrata("HIGH")
+					head:SetFrameStrata("HIGH")
 				end
 			end
 		end
 
-
-
-
+		DPSMateSettings.lock = true
 	end
 end
 
@@ -348,16 +342,9 @@ if AS:CheckAddOn("KLHThreatMeter") then
 		KLHTM_Frame:SetParent(parent)
 		KLHTM_Frame:ClearAllPoints()
 		KLHTM_Frame:SetAllPoints(parent)
-		KLHTM_Frame:SetWidth(parent:GetWidth())
-		KLHTM_Frame:SetWidth(parent:GetHeight())
+		KLHTM_Frame:SetFrameStrata("MEDIUM")
 
-		HookScript(KLHTM_Frame, "OnSizeChanged", function()
-			this:SetWidth(parent:GetWidth())
-			this:SetHeight(parent:GetHeight())
-		end)
-
-		E:Point(KLHTM_Frame, "TOPLEFT", parent, "TOPLEFT", E.PixelMode and -1 or 0, E.PixelMode and 8 or 7)
-		-- E:Point(KLHTM_Frame, "BOTTOMRIGHT", parent, "BOTTOMRIGHT", E.PixelMode and 1 or 0, E.PixelMode and -1 or 0)
+		KLHTM_GuiState.pinned = true
 	end
 end
 

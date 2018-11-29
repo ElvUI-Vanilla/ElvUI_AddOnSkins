@@ -12,10 +12,10 @@ local function LoadSkin()
 		"OptionsFrame",
 		"OptionsFrameControls",
 		"OptionsFrameTitle",
+		"RaidFrame",
 		"RaidFrameBottom",
 		"SelfFrame",
-		"SelfFrameBottom",
-		"TitleFrameLongTitle"
+		"SelfFrameBottom"
 	}
 	for i = 1, getn(KLHTMFrames) do
 		local KLHTMFrame = _G["KLHTM_"..KLHTMFrames[i]]
@@ -39,13 +39,6 @@ local function LoadSkin()
 		"GeneralMaximisedView",
 		"GeneralMaximisedMasterTarget",
 		"GeneralMaximisedClearThreat",
-		"SelfColumnThreatPercent",
-		"SelfColumnThreat",
-		"SelfColumnRage",
-		"SelfColumnDamage",
-		"SelfMinimisedThreat",
-		"SelfHideZero",
-		"SelfAbbreviate",
 		"RaidColumnThreatPercent",
 		"RaidColumnThreat",
 		"RaidMinimisedRank",
@@ -55,7 +48,15 @@ local function LoadSkin()
 		"RaidResize",
 		"RaidAbbreviate",
 		"RaidAggroGain",
-		"RaidHideBottom"
+		"RaidHideBottom",
+		"SelfColumnHits",
+		"SelfColumnThreatPercent",
+		"SelfColumnThreat",
+		"SelfColumnRage",
+		"SelfColumnDamage",
+		"SelfMinimisedThreat",
+		"SelfHideZero",
+		"SelfAbbreviate"
 	}
 	for i = 1, getn(KLHTMCheckBoxs) do
 		local KLHTMCheckBox = _G["KLHTM_OptionsFrame"..KLHTMCheckBoxs[i]]
@@ -66,11 +67,11 @@ local function LoadSkin()
 
 	-- Buttons
 	local KLHTMButtons = {
+		"GeneralMinimisedClearThreat",
 		"OptionsFrameControlsGeneral",
 		"OptionsFrameControlsSelf",
 		"OptionsFrameControlsRaid",
 		"OptionsFrameControlsClose",
-		"GeneralMinimisedClearThreat",
 		"SelfFrameBottomReset"
 	}
 	for i = 1, getn(KLHTMButtons) do
@@ -83,9 +84,7 @@ local function LoadSkin()
 	-- Slider
 	S:HandleSliderFrame(KLHTM_OptionsFrameRaidRows)
 
-	-- Misc
-	KLHTM_GuiState.pinned = true
-
+	-- Kill
 	E:Kill(KLHTM_TitleFramePin)
 	E:Kill(KLHTM_TitleFrameUnpin)
 	E:Kill(KLHTM_OptionsFrameGeneralScale)
