@@ -13,7 +13,7 @@ local dewdropEditBoxFrame
 local dewdropSliderFrame
 
 local function SkinDewdrop2()
-	local frame
+	local frame, button
 	local i = 1
 
 	while _G["Dewdrop20Level"..i] do
@@ -33,9 +33,15 @@ local function SkinDewdrop2()
 	end
 
 	i = 1
-	while _G["Dewdrop20Button" .. i] do
-		if not _G["Dewdrop20Button" .. i].isHook then
-			HookScript(_G["Dewdrop20Button" .. i], "OnEnter", function(self)
+	while _G["Dewdrop20Button"..i] do
+		button = _G["Dewdrop20Button"..i]
+
+		button.text:SetFont(E.media.normFont, 12)
+
+		if not button.isHook then
+			button.highlight:SetTexture(1, 1, 1, 0.3)
+
+			HookScript(button, "OnEnter", function(self)
 				if not self.disabled and self.hasArrow then
 					if not dewdropEditBoxFrame and self.hasEditBox then
 						dewdropEditBoxFrame = AS:FindFrameBySizeChild({"EditBox"}, 200, 40)
@@ -46,6 +52,7 @@ local function SkinDewdrop2()
 							dewdropEditBoxFrame.editBox:DisableDrawLayer("BACKGROUND")
 						end
 					end
+
 					if not dewdropSliderFrame and self.hasSlider then
 						dewdropSliderFrame = AS:FindFrameBySizeChild({"Slider", "EditBox"}, 100, 170)
 
@@ -60,7 +67,8 @@ local function SkinDewdrop2()
 					SkinDewdrop2()
 				end
 			end)
-			_G["Dewdrop20Button" .. i].isHook = true
+
+			button.isHook = true
 		end
 
 		i = i + 1
@@ -109,32 +117,48 @@ local function SkinRockConfig(lib)
 	local function SkinMainFrame(self)
 		if self.base.isSkinned then return end
 
-		E:SetTemplate(self.base, "Transparent")
-		E:StripTextures(self.base.header)
+		self.base:SetTemplate("Transparent")
+		self.base.header:StripTextures()
+
 		S:HandleCloseButton(self.base.closeButton, self.base)
 
-		E:SetTemplate(self.base.treeView, "Transparent")
-		S:HandleScrollBar(self.base.treeView.scrollBar)
-		S:HandleDropDownBox(self.base.addonChooser)
+		E:StripTextures(self.base.treeView)
+		E:CreateBackdrop(self.base.treeView, "Transparent")
+		E:Point(self.base.treeView.backdrop, "TOPLEFT", 0, 0)
+		E:Point(self.base.treeView.backdrop, "BOTTOMRIGHT", -6, 0)
 
+		S:HandleScrollBar(self.base.treeView.scrollBar)
+
+		S:HandleDropDownBox(self.base.addonChooser)
+		E:Point(self.base.addonChooser, "TOP", 1, -2)
+
+		E:StripTextures(self.base.addonChooser.text)
+		E:CreateBackdrop(self.base.addonChooser.text, "Default")
+		E:Point(self.base.addonChooser.text.backdrop, "BOTTOMRIGHT", 19, 0)
 		E:Height(self.base.addonChooser.text, 20)
-		E:SetTemplate(self.base.addonChooser.text, "Transparent")
+
 		S:HandleNextPrevButton(self.base.addonChooser.button, true)
 
 		local pullout = _G[self.base.mainPane:GetName().."_ChoicePullout"]
 		if pullout then
-			E:SetTemplate(pullout, "Transparent")
+			E:SetTemplate(pullout, "Default")
 		else
 			S:SecureHookScript(self.base.addonChooser.button, "OnClick", function(self)
-				E:SetTemplate(_G[lib.base.mainPane:GetName().."_ChoicePullout"], "Transparent")
+				E:SetTemplate(_G[lib.base.mainPane:GetName().."_ChoicePullout"], "Default")
 				S:Unhook(self, "OnClick")
 			end)
 		end
 
-		E:SetTemplate(self.base.mainPane, "Transparent")
+		E:StripTextures(self.base.mainPane)
+		E:CreateBackdrop(self.base.mainPane, "Transparent")
+		E:Point(self.base.mainPane.backdrop, "TOPLEFT", 6, 0)
+		E:Point(self.base.mainPane.backdrop, "BOTTOMRIGHT", 0, 0)
+
 		S:HandleScrollBar(self.base.mainPane.scrollBar)
 
-		E:SetTemplate(self.base.treeView.sizer, "Transparent")
+		E:SetTemplate(self.base.treeView.sizer, "Default", true)
+		HookScript(self.base.treeView.sizer, "OnEnter", S.SetModifiedBackdrop)
+		HookScript(self.base.treeView.sizer, "OnLeave", S.SetOriginalBackdrop)
 
 		self.base.isSkinned = true
 	end

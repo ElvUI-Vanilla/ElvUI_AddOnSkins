@@ -11,7 +11,6 @@ local find, format, lower, match, trim = string.find, string.format, string.lowe
 local GetAddOnInfo = GetAddOnInfo
 local GetNumAddOns = GetNumAddOns
 local IsAddOnLoaded = IsAddOnLoaded
-local DISABLE, FONT_SIZE, NONE = DISABLE, FONT_SIZE, NONE
 
 local addonList = {
 	"Atlas",
@@ -22,18 +21,18 @@ local addonList = {
 	"WowLuaVanilla",
 }
 
-local function ColorizeVersion(version)
-	return format(" |cffff7d0a%s|r", version)
+local function ColorizeVersion(name, version)
+	return format("%s |cffff7d0a%s|r", name, version)
 end
 local SUPPORTED_ADDONS_STRING = ""
 
 local SUPPORTED_ADDONS = {
-	"Atlas"..ColorizeVersion("1.8.1 & 1.13.0-Backport"),			-- 1.8.1 & 1.13.0-Backport
-	"AtlasLoot"..ColorizeVersion("1.18.02 & 4.07.01-Backport"),		-- 1.18.02 & 4.07.01-Backport
-	"AtlasQuest"..ColorizeVersion("4.1.3"),							-- 4.1.3
-	"DPSMate"..ColorizeVersion("130"),								-- 130
-	"KLHThreatMeter"..ColorizeVersion("17.35"),						-- 17.35
-	"WowLuaVanilla"..ColorizeVersion("v40300-1.0.2-71bf340 "),		-- v40300-1.0.2-71bf340
+	ColorizeVersion("Atlas",					"1.8.1 & 1.13.0-Backport"),
+	ColorizeVersion("AtlasLoot",				"1.18.02 & 4.07.01-Backport"),
+	ColorizeVersion("AtlasQuest",				"4.1.3"),
+	ColorizeVersion("DPSMate",					"130"),
+	ColorizeVersion("KLHThreatMeter",			"17.35"),
+	ColorizeVersion("WowLuaVanilla",			"v40300-1.0.2-71bf340 "),
 }
 for _, supportedAddOn in pairs(SUPPORTED_ADDONS) do
 	SUPPORTED_ADDONS_STRING = SUPPORTED_ADDONS_STRING.."\n"..supportedAddOn
@@ -196,7 +195,7 @@ local function getOptions()
 							dbmBarHeight = {
 								order = 1,
 								type = "range",
-								name = "Bar Height",
+								name = L["Bar Height"],
 								min = 6, max = 60, step = 1
 							},
 							spacer = {
@@ -214,7 +213,7 @@ local function getOptions()
 							dbmFontSize = {
 								order = 4,
 								type = "range",
-								name = FONT_SIZE,
+								name = L["Font Size"],
 								min = 6, max = 22, step = 1
 							},
 							dbmFontOutline = {
@@ -222,7 +221,7 @@ local function getOptions()
 								type = "select",
 								name = L["Font Outline"],
 								values = {
-									["NONE"] = NONE,
+									["NONE"] = L["None"],
 									["OUTLINE"] = "OUTLINE",
 									["MONOCHROMEOUTLINE"] = "MONOCROMEOUTLINE",
 									["THICKOUTLINE"] = "THICKOUTLINE"
@@ -235,7 +234,7 @@ local function getOptions()
 			embed = {
 				order = 4,
 				type = "group",
-				name = "Embed Settings",
+				name = L["Embed Settings"],
 				get = function(info) return E.db.addOnSkins.embed[info[getn(info)]] end,
 				set = function(info, value) E.db.addOnSkins.embed[info[getn(info)]] = value E:GetModule("EmbedSystem"):EmbedUpdate() end,
 				args = {
@@ -254,7 +253,7 @@ local function getOptions()
 						type = "select",
 						name = L["Embed Type"],
 						values = {
-							["DISABLE"] = DISABLE,
+							["DISABLE"] = L["Disable"],
 							["SINGLE"] = L["Single"],
 							["DOUBLE"] = L["Double"]
 						}
@@ -288,19 +287,19 @@ local function getOptions()
 					hideChat = {
 						order = 7,
 						type = "select",
-						name = "Hide Chat Frame",
+						name = L["Hide Chat Frame"],
 						values = E:GetModule("EmbedSystem"):GetChatWindowInfo(),
 						disabled = function() return E.db.addOnSkins.embed.embedType == "DISABLE" end
 					},
 					rightChatPanel = {
 						order = 8,
 						type = "toggle",
-						name = "Embed into Right Chat Panel"
+						name = L["Embed into Right Chat Panel"]
 					},
 					belowTopTab = {
 						order = 9,
 						type = "toggle",
-						name = "Embed Below Top Tab"
+						name = L["Embed Below Top Tab"]
 					}
 				}
 			},

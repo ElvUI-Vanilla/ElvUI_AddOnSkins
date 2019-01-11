@@ -4,6 +4,7 @@ local AS = E:GetModule("AddOnSkins");
 --Cache global variables
 --Lua functions
 local pairs = pairs
+local getn = table.getn
 --WoW API / Variables
 local EnumerateFrames = EnumerateFrames
 
